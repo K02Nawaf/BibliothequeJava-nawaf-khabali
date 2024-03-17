@@ -43,6 +43,7 @@ public class Main extends Application {
         empruntButton.setOnAction(e -> primaryStage.setScene(empruntScene));
         auteurButton.setOnAction(e -> primaryStage.setScene(auteurScene));
 
+        
         // Create a horizontal box for the navigation bar
         HBox navigationBar = new HBox();
         navigationBar.getChildren().addAll(livreButton, adherentButton, empruntButton, auteurButton);
