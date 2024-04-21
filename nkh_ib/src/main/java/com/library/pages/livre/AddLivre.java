@@ -126,7 +126,7 @@ public class AddLivre {
             while (resultSet.next()) {
                 String nom = resultSet.getString("nom");
                 String prenom = resultSet.getString("prenom");
-                comboBox.getItems().add(nom + " " + prenom);
+                comboBox.getItems().add(prenom + " " + nom);
             }
 
         } catch (SQLException e) {

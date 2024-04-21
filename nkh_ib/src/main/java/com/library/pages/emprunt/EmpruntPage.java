@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 
 import com.library.DBConnection;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -45,35 +45,68 @@ public class EmpruntPage extends BorderPane {
 
         // Initialize TableView for displaying loans
         tableView = new TableView<>();
-        TableColumn<Emprunt, Integer> idEmpruntColumn = new TableColumn<>("Loan ID");
-        idEmpruntColumn.setCellValueFactory(data -> data.getValue().idEmpruntProperty().asObject());
 
-        // Add more TableColumn definitions as needed for loan date, return date, status, book title, adherent name
-        
+        TableColumn<Emprunt, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(data -> data.getValue().idEmpruntProperty().asObject());
+
+        TableColumn<Emprunt, String> dateEmpruntColumn = new TableColumn<>("Date Emprunt");
+        dateEmpruntColumn.setCellValueFactory(data -> data.getValue().dateEmpruntProperty());
+
+        TableColumn<Emprunt, String> dateRetourColumn = new TableColumn<>("Date Retour");
+        dateRetourColumn.setCellValueFactory(data -> data.getValue().dateRetourProperty());
+
+        TableColumn<Emprunt, String> statutEmpruntColumn = new TableColumn<>("est-il prêté?");
+        statutEmpruntColumn.setCellValueFactory(data -> {
+            String value = (data.getValue().getStatutEmprunt() == 1) ? "Oui" : "Non";
+            return new SimpleStringProperty(value);
+        });
+
+        TableColumn<Emprunt, Integer> nmbEmpruntColumn = new TableColumn<>("Copies");
+        nmbEmpruntColumn.setCellValueFactory(data -> data.getValue().nmbEmpruntProperty().asObject());
+
+        TableColumn<Emprunt, Integer> adhNumColumn = new TableColumn<>("ID_adh");
+        adhNumColumn.setCellValueFactory(data -> data.getValue().AdhNumProperty().asObject());
+
+        TableColumn<Emprunt, Integer> isbnColumn = new TableColumn<>("ISBN");
+        isbnColumn.setCellValueFactory(data -> data.getValue().ISBNProperty().asObject());
+
+        TableColumn<Emprunt, String> bookTitle = new TableColumn<>("Livre");
+        bookTitle.setCellValueFactory(data -> data.getValue().bookTitleProperty());
+
+        TableColumn<Emprunt, String> adherentName = new TableColumn<>("Adherent");
+        adherentName.setCellValueFactory(data -> data.getValue().adherentNameProperty());
+
+        tableView.getColumns().addAll(idColumn, dateEmpruntColumn, dateRetourColumn, statutEmpruntColumn, adherentName, bookTitle);
         // Initialize buttons for add, modify, and delete actions
         addButton = new Button("Add");
         modifyButton = new Button("Modify");
         deleteButton = new Button("Delete");
 
         // Add event handlers for button actions
-        // Add button
-        addButton.setOnAction(event -> AddEmprunt.display(this));
-        // Modify button
+        // Add Loan button
+        addButton.setOnAction(event -> AddEmprunt.display());
+        // Modify Loan button
         modifyButton.setOnAction(event -> {
+            // Get the selected loan
             Emprunt selectedEmprunt = tableView.getSelectionModel().getSelectedItem();
             if (selectedEmprunt == null) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No Loan Selected", "Please select a loan to modify.");
                 return;
             }
-            ModifyEmprunt.display(selectedEmprunt);
+        
+            // Call the display method of ModifyEmprunt class
+            ModifyEmprunt.display(selectedEmprunt.getISBN());
         });
-        // Delete button
+        
+        // Delete Loan button
         deleteButton.setOnAction(event -> {
+            // Get the selected loan
             Emprunt selectedEmprunt = tableView.getSelectionModel().getSelectedItem();
             if (selectedEmprunt == null) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No Loan Selected", "Please select a loan to delete.");
                 return;
             }
+            // Call the delete method of DeleteEmprunt class
             DeleteEmprunt.delete(selectedEmprunt);
         });
 
@@ -87,35 +120,34 @@ public class EmpruntPage extends BorderPane {
 
     public static void fetchData() {
         // Fetch data from the database and populate the TableView
-        try (Connection connection = DBConnection.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM emprunt")) {
+
+        try (Connection connection = DBConnection.getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT e.id_emprunt, e.date_emprunt, e.date_retour, e.statut_emprunt, e.nmb_emprunt, e.Adh_num, e.ISBN, l.titre, a.nom, a.prenom FROM emprunt e INNER JOIN livre l ON e.ISBN = l.ISBN INNER JOIN adherent a ON e.Adh_num = a.Adh_num")) {
 
             ObservableList<Emprunt> emprunts = FXCollections.observableArrayList();
 
             while (resultSet.next()) {
-                // Extract loan information from the ResultSet
                 int idEmprunt = resultSet.getInt("id_emprunt");
-                Date dateEmprunt = resultSet.getDate("date_emprunt");
-                Date dateRetour = resultSet.getDate("date_retour");
+                String dateEmprunt = resultSet.getString("date_emprunt");
+                String dateRetour = resultSet.getString("date_retour");
                 int statutEmprunt = resultSet.getInt("statut_emprunt");
                 int nmbEmprunt = resultSet.getInt("nmb_emprunt");
-                int AdhNum = resultSet.getInt("Adh_num");
-                int ISBN = resultSet.getInt("ISBN");
-            
-                // Use additional queries to fetch book titles and adherent names based on foreign keys (ISBN and Adh_num)
-                // String bookTitle = getBookTitle(ISBN);
-                // String adherentName = getAdherentName(AdhNum);
-            
-                // Create Emprunt object and add to the list
-                Emprunt emprunt = new Emprunt(idEmprunt, dateEmprunt, dateRetour, statutEmprunt, nmbEmprunt);
+                int isbn = resultSet.getInt("ISBN");
+                int adhNum = resultSet.getInt("Adh_num");
+                String titre = resultSet.getString("titre");
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String adherentName = adhNum + " | " + nom + " " + prenom;
+                String bookTitle = isbn + " | " + titre;
+
+                Emprunt emprunt = new Emprunt(idEmprunt, dateEmprunt, dateRetour, statutEmprunt, nmbEmprunt, adhNum, isbn, bookTitle, adherentName);
                 emprunts.add(emprunt);
             }
-            
+
             tableView.setItems(emprunts);
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle database errors
+            // Handle database errors
+
         }
     }
 

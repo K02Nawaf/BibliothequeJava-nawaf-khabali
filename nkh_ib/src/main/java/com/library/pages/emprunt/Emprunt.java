@@ -1,17 +1,12 @@
 package com.library.pages.emprunt;
 
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.util.StringConverter;
-
-import java.time.LocalDate;
-import java.util.Date;
 
 public class Emprunt {
     private SimpleIntegerProperty idEmprunt;
-    private SimpleObjectProperty<LocalDate> dateEmprunt;
-    private SimpleObjectProperty<LocalDate> dateRetour;
+    private SimpleStringProperty dateEmprunt;
+    private SimpleStringProperty dateRetour;
     private SimpleIntegerProperty statutEmprunt;
     private SimpleIntegerProperty nmbEmprunt;
     private SimpleIntegerProperty AdhNum;
@@ -19,10 +14,10 @@ public class Emprunt {
     private SimpleStringProperty bookTitle;
     private SimpleStringProperty adherentName;
 
-    public Emprunt(int idEmprunt, LocalDate dateEmprunt, LocalDate dateRetour, int statutEmprunt, int nmbEmprunt, int AdhNum, int ISBN, String bookTitle, String adherentName) {
+    public Emprunt(int idEmprunt, String dateEmprunt, String dateRetour, int statutEmprunt, int nmbEmprunt, int AdhNum, int ISBN, String bookTitle, String adherentName) {
         this.idEmprunt = new SimpleIntegerProperty(idEmprunt);
-        this.dateEmprunt = new SimpleObjectProperty<>(dateEmprunt);
-        this.dateRetour = new SimpleObjectProperty<>(dateRetour);
+        this.dateEmprunt = new SimpleStringProperty(dateEmprunt);
+        this.dateRetour = new SimpleStringProperty(dateRetour);
         this.statutEmprunt = new SimpleIntegerProperty(statutEmprunt);
         this.nmbEmprunt = new SimpleIntegerProperty(nmbEmprunt);
         this.AdhNum = new SimpleIntegerProperty(AdhNum);
@@ -32,20 +27,15 @@ public class Emprunt {
     }
 
     // Getters and setters for all properties
-
-    public Emprunt(int idEmprunt2, Date dateEmprunt2, Date dateRetour2, int statutEmprunt2, int nmbEmprunt2) {
-        //TODO Auto-generated constructor stub
-    }
-
     public SimpleIntegerProperty idEmpruntProperty() {
         return idEmprunt;
     }
 
-    public SimpleObjectProperty<LocalDate> dateEmpruntProperty() {
+    public SimpleStringProperty dateEmpruntProperty() {
         return dateEmprunt;
     }
 
-    public SimpleObjectProperty<LocalDate> dateRetourProperty() {
+    public SimpleStringProperty dateRetourProperty() {
         return dateRetour;
     }
 
@@ -77,11 +67,11 @@ public class Emprunt {
         return idEmprunt.get();
     }
 
-    public LocalDate getDateEmprunt() {
+    public String getDateEmprunt() {
         return dateEmprunt.get();
     }
 
-    public LocalDate getDateRetour() {
+    public String getDateRetour() {
         return dateRetour.get();
     }
 
@@ -107,21 +97,5 @@ public class Emprunt {
 
     public String getAdherentName() {
         return adherentName.get();
-    }
-
-    // You can also override the toString() method if needed
-    @Override
-    public String toString() {
-        return "Emprunt{" +
-                "idEmprunt=" + idEmprunt +
-                ", dateEmprunt=" + dateEmprunt +
-                ", dateRetour=" + dateRetour +
-                ", statutEmprunt=" + statutEmprunt +
-                ", nmbEmprunt=" + nmbEmprunt +
-                ", AdhNum=" + AdhNum +
-                ", ISBN=" + ISBN +
-                ", bookTitle=" + bookTitle +
-                ", adherentName=" + adherentName +
-                '}';
     }
 }
