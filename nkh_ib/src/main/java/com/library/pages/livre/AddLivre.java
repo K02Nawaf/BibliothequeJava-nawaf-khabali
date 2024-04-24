@@ -67,7 +67,7 @@ public class AddLivre {
             // Add book to the database
             try (Connection connection = DBConnection.getConnection();
                  PreparedStatement statement = connection.prepareStatement(
-                         "INSERT INTO livre (titre, prix, genre, nmb_livre, Aut_num) VALUES (?, ?, ?, ?, ?)")) {
+                         "INSERT INTO `livre` (`titre`, `prix`, `genre`, `nmb_livre`, `Aut_num`) VALUES (?, ?, ?, ?, ?)")) {
                 statement.setString(1, title);
                 statement.setInt(2, price);
                 statement.setString(3, genre);
@@ -138,8 +138,8 @@ public class AddLivre {
         // Get the author ID from the selected author's name
         int authorId = -1;
         String[] parts = selectedAuthor.split(" ");
-        String nom = parts[0];
-        String prenom = parts[1];
+        String nom = parts[1]; // Index 1 corresponds to nom after reversing
+        String prenom = parts[0]; // Index 0 corresponds to prenom after reversing
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(
